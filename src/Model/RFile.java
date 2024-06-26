@@ -1,9 +1,13 @@
-
+package Model;
 
 import java.io.File;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class RFile {
+public class RFile implements Serializable {
+    @Serial
+   final private static long serialVersionUID = -8701095066761201967L;
     int id;
     public File file;
     private ArrayList<Account> accounts;

@@ -1,7 +1,9 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
+import Model.Account;
+import Model.Packet;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ServerTCP extends Thread {
@@ -11,41 +13,36 @@ public class ServerTCP extends Thread {
         this.socket = socket;
     }
 
-    public boolean loginCheck() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Account account = objectMapper.readValue(Variables.request, Account.class);
+    public boolean loginCheck(Account account) throws IOException {
         return Variables.accounts.stream().anyMatch(account1 -> account1.getName().equals(account.getName()) && account1.getPassword().equals(account.getPassword()));
     }
 
-    public boolean registerCheck() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Account account = objectMapper.readValue(Variables.request, Account.class);
+    public boolean registerCheck(Account account) throws IOException {
         return Variables.accounts.stream().noneMatch(account1 -> account1.getName().equals(account.getName()));
-    }
-
-    public void writerResponse(boolean valid) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.writeValue(Variables.response, valid);
     }
 
     @Override
     public void run() {
         try {
             boolean valid;
-            if (socket.getInputStream().read() == 0) {
-                valid = loginCheck();
+            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+            Object o = inputStream.readObject();
+            Packet packet = (Packet) o;
+            if (packet.getType().equals("login")) {
+                valid = loginCheck((Account) packet.getObject());
             } else {
-                valid = registerCheck();
+                valid = registerCheck((Account) packet.getObject());
                 if (valid) {
-                    Variables.accounts.add(new ObjectMapper().readValue(Variables.request, Account.class));
+                    Variables.accounts.add((Account) packet.getObject());
                 }
             }
-            writerResponse(valid);
-            String response = new ObjectMapper().writeValueAsString(valid);
-            socket.getOutputStream().write(response.getBytes());
+            outputStream.writeObject(valid);
             socket.getOutputStream().flush();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 }

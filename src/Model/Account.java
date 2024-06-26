@@ -1,13 +1,19 @@
+package Model;
+
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Account {
-
+public class Account implements Serializable {
+    @Serial
+   final private static long serialVersionUID = -3930272386469641391L;
     private String name;
     private String password;
     private JWT jwt;
     private ArrayList<RFile> files;
     public Account() {
     }
+
     public Account(String name, String password, ArrayList<RFile> files, JWT jwt) {
         this.name = name;
         this.files = files;
