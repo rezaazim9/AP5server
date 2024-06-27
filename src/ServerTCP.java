@@ -82,7 +82,40 @@ public class ServerTCP extends Thread {
         }
         return requests;
     }
-
+    public void add(Packet packet){
+       RequestAccess requestAccess=(RequestAccess) packet.getObject();
+       Account account=requestAccess.getAccount();
+       int id=requestAccess.getId();
+        for (Account account1:Variables.accounts){
+            if (account.getName().equals(account1.getName())){
+                account=account1;
+                break;
+            }
+        }
+        for (RFile file:Variables.files){
+            if (file.getId()==id){
+                account.getFiles().add(file);
+                break;
+            }
+        }
+    }
+    public void remove(Packet packet){
+        RequestAccess requestAccess=(RequestAccess) packet.getObject();
+        Account account=requestAccess.getAccount();
+        int id=requestAccess.getId();
+        for (Account account1:Variables.accounts){
+            if (account.getName().equals(account1.getName())){
+                account=account1;
+                break;
+            }
+        }
+        for (RFile file:Variables.files){
+            if (file.getId()==id){
+                account.getFiles().remove(file);
+                break;
+            }
+        }
+    }
 
     @Override
     public void run() {
@@ -112,9 +145,14 @@ public class ServerTCP extends Thread {
             else if (packet.getType().equals("viewAccess")){
                 outputStream.writeObject(viewRequests(packet));
             }
+            else if (packet.getType().equals("add")){
+                add(packet);
+            }
+            else if (packet.getType().equals("remove")){
+                remove(packet);
+            }
             socket.getOutputStream().flush();
         } catch (IOException e) {
-            e.printStackTrace();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
