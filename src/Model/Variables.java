@@ -1,6 +1,4 @@
-import Model.Account;
-import Model.JWT;
-import Model.RFile;
+package Model;
 
 import java.io.File;
 import java.util.ArrayList;
