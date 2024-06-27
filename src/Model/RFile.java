@@ -8,8 +8,25 @@ import java.util.ArrayList;
 public class RFile implements Serializable {
     @Serial
    final private static long serialVersionUID = -8701095066761201967L;
-    int id;
-    public File file;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    private int id;
+    private File file;
     private ArrayList<Account> accounts;
     private ArrayList<Account> requests;
 

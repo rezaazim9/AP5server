@@ -3,6 +3,7 @@ import Model.Packet;
 import Model.RFile;
 import Model.RequestAccess;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -33,7 +34,7 @@ public class ServerTCP extends Thread {
             }
         }
         for (RFile file: account.getFiles()){
-            filesName.add(file.file.getName());
+            filesName.add(file.getFile().getName());
         }
         return  filesName;
     }
@@ -41,7 +42,7 @@ public class ServerTCP extends Thread {
         RFile file=null;
         RequestAccess requestAccess=(RequestAccess) packet.getObject();
         for (RFile rFile:Variables.files){
-            if (requestAccess.getFileName().equals(rFile.file.getName())){
+            if (requestAccess.getId()==rFile.getId()){
                 file=rFile;
             }
         }
@@ -51,6 +52,37 @@ public class ServerTCP extends Thread {
             }
         }
     }
+    public boolean viewRequestAccess(Packet packet){
+        Account account=new Account();
+        RequestAccess requestAccess=(RequestAccess)packet.getObject();
+        for (Account account1:Variables.accounts){
+            if (account1.getName().equals(requestAccess.getAccount().getName())) {
+                account=account1;
+                break;
+            }
+        }
+        for (RequestAccess requestAccess1:account.getRequestAccesses()){
+            if (requestAccess1.getId()==requestAccess.getId()){
+                return true;
+            }
+        }
+        return false;
+    }
+    public ArrayList<String> viewRequests(Packet packet){
+        RFile file=new RFile(0,null,null,null);
+        for (RFile file1:Variables.files){
+            if (file1.getId()==(int)packet.getObject()){
+                file=file1;
+                break;
+            }
+        }
+        ArrayList<String> requests=new ArrayList<>();
+        for (Account account:file.getRequests()){
+            requests.add(account.getName());
+        }
+        return requests;
+    }
+
 
     @Override
     public void run() {
@@ -73,6 +105,12 @@ public class ServerTCP extends Thread {
                 outputStream.writeObject(view(packet));
             } else if (packet.getType().equals("requestAccess")) {
                 sendingRequest(packet);
+            }
+            else if(packet.getType().equals("viewRequestAccess")){
+                outputStream.writeObject(viewRequestAccess(packet));
+            }
+            else if (packet.getType().equals("viewAccess")){
+                outputStream.writeObject(viewRequests(packet));
             }
             socket.getOutputStream().flush();
         } catch (IOException e) {

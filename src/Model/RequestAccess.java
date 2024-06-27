@@ -7,11 +7,11 @@ public class RequestAccess implements Serializable {
     @Serial
     final private static  long serialVersionUID = -3273031418871145319L;
     private Account account;
-    public String fileName;
+   private int id;
 
-    public RequestAccess(Account account, String fileName) {
+    public RequestAccess(Account account, int id) {
         this.account = account;
-        this.fileName = fileName;
+        this.id=id;
     }
 
     public Account getAccount() {
@@ -22,11 +22,11 @@ public class RequestAccess implements Serializable {
         this.account = account;
     }
 
-    public String getFileName() {
-        return fileName;
+    public int getId() {
+        return id;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setId(int id) {
+        this.id = id;
     }
 }
