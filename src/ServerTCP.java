@@ -4,6 +4,7 @@ import Model.Packet;
 import Model.Variables;
 
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -37,15 +38,23 @@ public class ServerTCP extends Thread {
             } else if (packet.getType().equals("view")) {
                 outputStream.writeObject(Logic.view(packet));
             } else if (packet.getType().equals("requestAccess")) {
-                Logic.sendingRequest(packet);
+                Logic.requestAccess(packet);
             } else if (packet.getType().equals("viewRequestAccess")) {
                 outputStream.writeObject(Logic.viewRequestAccess(packet));
-            } else if (packet.getType().equals("viewAccess")) {
+            } else if (packet.getType().equals("viewRequests")) {
                 outputStream.writeObject(Logic.viewRequests(packet));
+            } else if (packet.getType().equals("viewAccess")) {
+                outputStream.writeObject(Logic.viewAccess(packet));
             } else if (packet.getType().equals("add")) {
                 Logic.add(packet);
             } else if (packet.getType().equals("remove")) {
                 Logic.remove(packet);
+            }
+            else if (packet.getType().equals("JWTDownload")) {
+                Logic.download(packet);
+            }
+            else if (packet.getType().equals("JWTUpload")) {
+               Logic.upload(packet);
             }
             socket.getOutputStream().flush();
         } catch (IOException e) {

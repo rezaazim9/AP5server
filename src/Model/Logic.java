@@ -1,6 +1,10 @@
 package Model;
 
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.util.ArrayList;
 
 public class Logic {
@@ -27,8 +31,8 @@ public class Logic {
         return filesName;
     }
 
-    public static void sendingRequest(Packet packet) {
-        RFile file = null;
+    public static void requestAccess(Packet packet) {
+        RFile file = new RFile(-1, null, new ArrayList<>(), new ArrayList<>());
         RequestAccess requestAccess = (RequestAccess) packet.getObject();
         for (RFile rFile : Variables.files) {
             if (requestAccess.getId() == rFile.getId()) {
@@ -36,8 +40,9 @@ public class Logic {
             }
         }
         for (Account account : Variables.accounts) {
-            if (account.getFiles().contains(file)) {
-                account.getRequestAccesses().add(requestAccess);
+            if (account.getName().equals(requestAccess.getAccount().getName())) {
+                file.getRequests().add(account);
+                requestAccess.getAccount().getRequestAccesses().add(requestAccess);
             }
         }
     }
@@ -51,8 +56,8 @@ public class Logic {
                 break;
             }
         }
-        for (RequestAccess requestAccess1 : account.getRequestAccesses()) {
-            if (requestAccess1.getId() == requestAccess.getId()) {
+        for (RFile file : account.getFiles()) {
+            if (file.getId()==requestAccess.getId()) {
                 return true;
             }
         }
@@ -60,7 +65,7 @@ public class Logic {
     }
 
     public static ArrayList<String> viewRequests(Packet packet) {
-        RFile file = new RFile(0, null, null, null);
+        RFile file = new RFile(-1, null, null, null);
         for (RFile file1 : Variables.files) {
             if (file1.getId() == (int) packet.getObject()) {
                 file = file1;
@@ -72,6 +77,20 @@ public class Logic {
             requests.add(account.getName());
         }
         return requests;
+    }
+    public static ArrayList<String> viewAccess(Packet packet){
+        RFile file = new RFile(-1, null, null, null);
+        for (RFile file1 : Variables.files) {
+            if (file1.getId() == (int) packet.getObject()) {
+                file = file1;
+                break;
+            }
+        }
+        ArrayList<String> access = new ArrayList<>();
+        for (Account account : file.getAccounts()) {
+            access.add(account.getName());
+        }
+        return access;
     }
 
     public static void add(Packet packet) {
@@ -86,9 +105,39 @@ public class Logic {
         }
         for (RFile file : Variables.files) {
             if (file.getId() == id) {
+                file.getRequests().remove(account);
+                file.getAccounts().add(account);
                 account.getFiles().add(file);
                 break;
             }
+        }
+    }
+
+    public static void upload(Packet packet) {
+        AccountFile accountFile = (AccountFile) packet.getObject();
+        Account account =new Account();
+        for (Account account1:Variables.accounts){
+            if (account1.getName().equals(accountFile.getAccount().getName())){
+                account=account1;
+                break;
+            }
+        }
+        File file = new File(accountFile.getFileAddress());
+        ArrayList<Account> accounts = new ArrayList<>();
+        accounts.add(account);
+        if (JOptionPane.showConfirmDialog(new Frame(), account.getJwt(), "Access", JOptionPane.YES_NO_OPTION) == 0) {
+            RFile rFile = new RFile(Variables.id++, file, accounts, new ArrayList<>());
+            account.getFiles().add(rFile);
+            Variables.files.add(rFile);
+            /////////////////////////////////////////////
+        }
+    }
+
+    public static void download(Packet packet) {
+        AccountFile accountFile = (AccountFile) packet.getObject();
+        Account account = accountFile.getAccount();
+        if (JOptionPane.showConfirmDialog(new Frame(), account.getJwt(), "Access", JOptionPane.YES_NO_OPTION) == 0) {
+            /////////////////////////////////////////////////////////////
         }
     }
 
@@ -104,7 +153,7 @@ public class Logic {
         }
         for (RFile file : Variables.files) {
             if (file.getId() == id) {
-                account.getFiles().remove(file);
+                file.getRequests().remove(account);
                 break;
             }
         }

@@ -1,8 +1,9 @@
-import java.net.Socket;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 
 public class ServerUDP extends Thread{
-    private Socket socket;
-    public ServerUDP(Socket socket){
+    private DatagramSocket socket;
+    public ServerUDP(DatagramSocket socket){
         this.socket=socket;
     }
     @Override
