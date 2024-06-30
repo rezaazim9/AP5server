@@ -6,20 +6,28 @@ import java.io.Serializable;
 public class AccountFile implements Serializable {
     @Serial
     final private static long serialVersionUID = 799875924863443431L;
-    private String fileAddress;
+    private String fileName;
     private Account account;
+    private int port;
 
-    public AccountFile(String fileAddress, Account account) {
-        this.fileAddress = fileAddress;
+    public AccountFile(String fileAddress, Account account, int port) {
+        this.fileName = fileAddress;
         this.account = account;
+        this.port = port;
     }
 
-    public String getFileAddress() {
-        return fileAddress;
+    public int getPort() {
+        return port;
+    }
+    public void setPort(int port) {
+        this.port = port;
+    }
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFileAddress(String fileAddress) {
-        this.fileAddress = fileAddress;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public Account getAccount() {

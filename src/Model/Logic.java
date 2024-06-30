@@ -1,11 +1,13 @@
 package Model;
 
+import Controller.ServerUDP;
+
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.net.DatagramPacket;
+import java.io.*;
+import java.net.*;
 import java.util.ArrayList;
+
 
 public class Logic {
     public static boolean loginCheck(Account account) throws IOException {
@@ -57,7 +59,7 @@ public class Logic {
             }
         }
         for (RFile file : account.getFiles()) {
-            if (file.getId()==requestAccess.getId()) {
+            if (file.getId() == requestAccess.getId()) {
                 return true;
             }
         }
@@ -78,7 +80,8 @@ public class Logic {
         }
         return requests;
     }
-    public static ArrayList<String> viewAccess(Packet packet){
+
+    public static ArrayList<String> viewAccess(Packet packet) {
         RFile file = new RFile(-1, null, null, null);
         for (RFile file1 : Variables.files) {
             if (file1.getId() == (int) packet.getObject()) {
@@ -108,29 +111,34 @@ public class Logic {
                 file.getRequests().remove(account);
                 file.getAccounts().add(account);
                 account.getFiles().add(file);
+                File copied = new File(Variables.dataBase + "\\" + account.getName() + "\\" + file.getFile().getName());
+                try {
+                    InputStream in = new BufferedInputStream(new FileInputStream(file.getFile()));
+                    OutputStream out = new BufferedOutputStream(new FileOutputStream(copied));
+                    byte[] buffer = new byte[1024];
+                    int lengthRead;
+                    while ((lengthRead = in.read(buffer)) > 0) {
+                        out.write(buffer, 0, lengthRead);
+                        out.flush();
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             }
         }
     }
 
-    public static void upload(Packet packet) {
+    public static void upload(Packet packet) throws SocketException, UnknownHostException, FileNotFoundException {
         AccountFile accountFile = (AccountFile) packet.getObject();
-        Account account =new Account();
-        for (Account account1:Variables.accounts){
-            if (account1.getName().equals(accountFile.getAccount().getName())){
-                account=account1;
+        Account account = new Account();
+        for (Account account1 : Variables.accounts) {
+            if (account1.getName().equals(accountFile.getAccount().getName())) {
+                account = account1;
                 break;
             }
         }
-        File file = new File(accountFile.getFileAddress());
-        ArrayList<Account> accounts = new ArrayList<>();
-        accounts.add(account);
-        if (JOptionPane.showConfirmDialog(new Frame(), account.getJwt(), "Access", JOptionPane.YES_NO_OPTION) == 0) {
-            RFile rFile = new RFile(Variables.id++, file, accounts, new ArrayList<>());
-            account.getFiles().add(rFile);
-            Variables.files.add(rFile);
-            /////////////////////////////////////////////
-        }
+        new ServerUDP(accountFile, account).start();
     }
 
     public static void download(Packet packet) {
