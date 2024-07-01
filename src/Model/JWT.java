@@ -8,10 +8,6 @@ public class JWT implements Serializable {
     final private static long serialVersionUID = -8445809092316972845L;
     private String token;
     private String username;
-
-    public JWT() {
-    }
-
     public JWT(String token, String username) {
         this.token = token;
         this.username = username;
