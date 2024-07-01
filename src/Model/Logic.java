@@ -1,6 +1,7 @@
 package Model;
 
-import Controller.ServerUDP;
+import Controller.ServerDownload;
+import Controller.ServerUpload;
 
 import javax.swing.*;
 import java.awt.*;
@@ -138,14 +139,17 @@ public class Logic {
                 break;
             }
         }
-        new ServerUDP(accountFile, account).start();
+        if (JOptionPane.showConfirmDialog(new Frame(), account.getJwt(), "Access", JOptionPane.YES_NO_OPTION) == 0) {
+            new ServerUpload(accountFile, account).start();
+        }
     }
 
-    public static void download(Packet packet) {
+
+    public static void download(Packet packet) throws SocketException {
         AccountFile accountFile = (AccountFile) packet.getObject();
         Account account = accountFile.getAccount();
         if (JOptionPane.showConfirmDialog(new Frame(), account.getJwt(), "Access", JOptionPane.YES_NO_OPTION) == 0) {
-            /////////////////////////////////////////////////////////////
+            new ServerDownload(accountFile, account).start();
         }
     }
 

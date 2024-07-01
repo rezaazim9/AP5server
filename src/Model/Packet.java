@@ -9,9 +9,9 @@ public class Packet implements Serializable {
     private Object object;
     private String type;
 
-    public Packet(Object object ,String type) {
+    public Packet(Object object, String type) {
         this.object = object;
-        this.type=type;
+        this.type = type;
     }
 
     public Object getObject() {

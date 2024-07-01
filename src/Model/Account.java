@@ -6,12 +6,13 @@ import java.util.ArrayList;
 
 public class Account implements Serializable {
     @Serial
-   final private static long serialVersionUID = -3930272386469641391L;
+    final private static long serialVersionUID = -3930272386469641391L;
     private String name;
     private String password;
     private JWT jwt;
     private ArrayList<RFile> files;
     private ArrayList<RequestAccess> requestAccesses;
+
     public Account() {
     }
 
@@ -28,7 +29,7 @@ public class Account implements Serializable {
         this.files = files;
         this.password = password;
         this.jwt = jwt;
-        this.requestAccesses=requestAccess;
+        this.requestAccesses = requestAccess;
     }
 
     public String getName() {

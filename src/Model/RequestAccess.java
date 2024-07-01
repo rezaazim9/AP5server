@@ -5,13 +5,13 @@ import java.io.Serializable;
 
 public class RequestAccess implements Serializable {
     @Serial
-    final private static  long serialVersionUID = -3273031418871145319L;
+    final private static long serialVersionUID = -3273031418871145319L;
     private Account account;
-   private int id;
+    private int id;
 
     public RequestAccess(Account account, int id) {
         this.account = account;
-        this.id=id;
+        this.id = id;
     }
 
     public Account getAccount() {

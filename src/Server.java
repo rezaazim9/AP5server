@@ -1,4 +1,4 @@
-package Controller;
+import Controller.ServerTCP;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,7 +13,6 @@ public class Server {
                 new ServerTCP(socket).start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

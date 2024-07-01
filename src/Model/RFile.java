@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class RFile implements Serializable {
     @Serial
-   final private static long serialVersionUID = -8701095066761201967L;
+    final private static long serialVersionUID = -8701095066761201967L;
 
     public int getId() {
         return id;
